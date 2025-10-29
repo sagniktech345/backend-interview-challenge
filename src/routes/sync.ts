@@ -3,6 +3,7 @@ import { SyncService } from '../services/syncService';
 import { TaskService } from '../services/taskService';
 import { Database } from '../db/database';
 
+
 export function createSyncRouter(db: Database): Router {
   const router = Router();
   const taskService = new TaskService(db);

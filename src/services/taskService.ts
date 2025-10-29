@@ -20,6 +20,7 @@ export class TaskService {
       sync_status: 'pending'
     };
 
+    
     const sql = `
       INSERT INTO tasks (
         id, title, description, completed, created_at, updated_at, 

@@ -103,7 +103,7 @@ export class SyncService {
 
       result.success = result.errors.length === 0;
       return result;
-
+      
     } catch (error) {
       result.success = false;
       result.errors.push({
