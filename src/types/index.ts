@@ -6,7 +6,7 @@ export interface Task {
   created_at: Date;
   updated_at: Date;
   is_deleted: boolean;
-  sync_status?: 'pending' | 'synced' | 'error';
+    sync_status?: 'pending' | 'in-progress' | 'synced' | 'error' | 'failed';
   server_id?: string;
   last_synced_at?: Date;
 }
@@ -43,6 +43,7 @@ export interface ConflictResolution {
 export interface BatchSyncRequest {
   items: SyncQueueItem[];
   client_timestamp: Date;
+  checksum: string;
 }
 
 export interface BatchSyncResponse {
@@ -53,4 +54,17 @@ export interface BatchSyncResponse {
     resolved_data?: Task;
     error?: string;
   }[];
+  server_timestamp: Date;
+  checksum_verified: boolean;
+}
+
+export interface DeadLetterQueueItem {
+  id: string;
+  task_id: string;
+  operation: 'create' | 'update' | 'delete';
+  data: Partial<Task>;
+  created_at: Date;
+  failed_at: Date;
+  retry_count: number;
+  final_error_message: string;
 }

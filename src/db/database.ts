@@ -43,9 +43,23 @@ export class Database {
         FOREIGN KEY (task_id) REFERENCES tasks(id)
       )
     `;
+    const createDeadLetterQueueTable = `
+      CREATE TABLE IF NOT EXISTS dead_letter_queue (
+        id TEXT PRIMARY KEY,
+        task_id TEXT NOT NULL,
+        operation TEXT NOT NULL,
+        data TEXT NOT NULL,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        failed_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        retry_count INTEGER DEFAULT 0,
+        final_error_message TEXT,
+        FOREIGN KEY (task_id) REFERENCES tasks(id)
+      )
+    `;
 
     await this.run(createTasksTable);
     await this.run(createSyncQueueTable);
+    await this.run(createDeadLetterQueueTable);
   }
 
   // Helper methods

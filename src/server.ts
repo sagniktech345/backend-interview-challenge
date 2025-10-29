@@ -5,6 +5,8 @@ import { Database } from './db/database';
 import { createTaskRouter } from './routes/tasks';
 import { createSyncRouter } from './routes/sync';
 import { errorHandler } from './middleware/errorHandler';
+import { TaskService } from './services/taskService';
+import { SyncService } from './services/syncService';
 
 dotenv.config();
 
@@ -16,7 +18,10 @@ app.use(cors());
 app.use(express.json());
 
 // Initialize database
-const db = new Database(process.env.DATABASE_URL || './data/tasks.sqlite3');
+const db = new Database(process.env.DATABASE_URL || 'tasks.db');
+
+const taskService = new TaskService(db);
+const syncService = new SyncService(db, taskService);
 
 // Routes
 app.use('/api/tasks', createTaskRouter(db));
@@ -30,6 +35,11 @@ async function start() {
   try {
     await db.initialize();
     console.log('Database initialized');
+
+    if (await syncService.checkConnectivity()) {
+      const result = await syncService.sync();
+      console.log("Sync finished:", result);
+    }
     
     app.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`);
